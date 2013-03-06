@@ -45,30 +45,26 @@
   <script type="text/javascript">
     var stations = {};
     var audioele = document.getElementById('player');
-    if(audioele.canPlayType('audio/mpeg')) {
-      $.getJSON('/stations.json', function(data) {
+    $.getJSON('/stations.json', function(data) {
         var $ulStats = $('#stations');
         data.forEach(function(element) {
-          $ulStats.append('<option value="' + element.id + '" >' + element.name + '</option>');
-          stations[element.id] = element;
+            $ulStats.append('<option value="' + element.id + '" >' + element.name + '</option>');
+            stations[element.id] = element;
         })
         $ulStats.bind('change' , start)
-      })
+    })
 
-      var start = function() {
+    var start = function() {
         var id = $('#stations').val();
         var url = '/stream/' + id + '.ogg';
         $('#player').attr('src', url)[0].play();
         $('#cover').html('<img src="http://rockradio.com/' + stations[id].cover +'" />');
-      }
-
-      $('#play').click(start)
-      $('#stop').click(function() {
-        $('#player')[0].pause();
-      })
-    } else {
-      $('#radio').html('<span>Browser doesn`t support MP3</span>');
     }
+
+    $('#play').click(start)
+    $('#stop').click(function() {
+        $('#player')[0].pause();
+    })
   </script>
 </body>
 </html>
