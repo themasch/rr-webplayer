@@ -1,0 +1,74 @@
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+  #radio {
+    height: 96px;
+    width: 270px;
+    border: 1px solid black;
+    background: black;
+  }
+  #cover {
+    float:left;width:125px;height:96px;
+  }
+  #controls {
+    color: #eee;
+    font-size: 250%;
+    text-align: center;
+  }
+  a#ad:link {
+    text-decoration: none;
+    color: silver;
+    font-size: 0.7em;
+  }
+  #radio span {
+    font-size: 200%;
+    color: #faa;
+  }
+  </style>
+</head>
+<body>
+  <div id="radio">
+    <div id="cover">
+    </div>
+    <select id="stations"></select>
+    <audio id="player"></audio>
+    <div id="controls">
+      <a id="play">►</a><a id="stop">◼</a>
+    </div>
+    <a href="http://rockradio.com/" id="ad">rockradio.com</a>
+  </div>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/zepto/1.0rc1/zepto.min.js"></script>
+  <script type="text/javascript">
+    var stations = {};
+    var audioele = document.getElementById('player');
+    if(audioele.canPlayType('audio/mpeg')) {
+      $.getJSON('/stations.json', function(data) {
+        var $ulStats = $('#stations');
+        data.forEach(function(element) {
+          $ulStats.append('<option value="' + element.id + '" >' + element.name + '</option>');
+          stations[element.id] = element;
+        })
+        $ulStats.bind('change' , start)
+      })
+
+      var start = function() {
+        var id = $('#stations').val();
+        var url = '/stream/' + id + '.ogg';
+        $('#player').attr('src', url)[0].play();
+        $('#cover').html('<img src="http://rockradio.com/' + stations[id].cover +'" />');
+      }
+
+      $('#play').click(start)
+      $('#stop').click(function() {
+        $('#player')[0].pause();
+      })
+    } else {
+      $('#radio').html('<span>Browser doesn`t support MP3</span>');
+    }
+  </script>
+</body>
+</html>

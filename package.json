@@ -1,0 +1,17 @@
+{
+  "name": "rockradio-webplayer",
+  "version": "0.0.1",
+  "description": "play rockradio.com streams in modern browsers",
+  "main": "index.js",
+  "dependencies": {
+    "express": "~3.1.0",
+    "fluent-ffmpeg": "~1.3.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "Mark Schmale <masch@masch.it>",
+  "license": "MIT"
+}
