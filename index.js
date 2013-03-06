@@ -25,11 +25,8 @@ app.get('/stream/:name.ogg', function(req, res) {
       .withAudioBitrate('96k')
       .withAudioChannels(2)
       .withAudioCodec('libvorbis')
-      .writeToStream(res, function(a, b) {
-        console.log('end', a, b)
-      })
+      .writeToStream(res)
   });
-  console.log(req.params.name, 'OGG')
 })
 // profit!
 app.listen(9090)
