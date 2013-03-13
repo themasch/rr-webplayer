@@ -1,5 +1,4 @@
 var Transform = require('stream').Transform
-  , moore     = require('./moore')
 
 function ShoutcastMetadataStream(options)
 {
@@ -27,8 +26,13 @@ ShoutcastMetadataStream.prototype._transform = function(chunk, push, done)
             var split = chunk.slice(skip+1, skip+(chunk[skip]*16)+1);
             this.emit('metadata', split.toString());
         }
-        var neuchunk = Buffer.concat([chunk.slice(0, skip), chunk.slice(skip+(chunk[skip]*16)+1)]);
-        push(neuchunk)
+        if(skip+(chunk[skip]*16)+1)] >= chunk.length) {
+            push(chunk);
+            this.count = chunk.length
+        } else {
+            var neuchunk = Buffer.concat([chunk.slice(0, skip), chunk.slice(skip+(chunk[skip]*16)+1)]);
+            push(neuchunk)
+        }
         this.count = chunk.length - (skip+1+(chunk[skip]*16));
     }
     else {

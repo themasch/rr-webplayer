@@ -6,18 +6,37 @@
   <title></title>
   <style>
   #radio {
-    height: 96px;
-    width: 270px;
+    height: 106px;
+    width: 350px;
     border: 1px solid black;
     background: black;
   }
   #cover {
-    float:left;width:125px;height:96px;
+    float:left;
+    width:125px;
+    height:96px;
+    margin: 5px;
+  }
+  #radio #info {
+    margin-top: 10px;
+    width: 175px;
+    float:left;
+  }
+  #radio #info input,
+  #radio #info select {
+    width:100%;
+  }
+  #radio span#title,
+  #radio span#artist {
+    color: white;
+    font-size: 110%;
   }
   #controls {
     color: #eee;
-    font-size: 250%;
+    font-size: 200%;
     text-align: center;
+    width: 40px;
+    float: right;
   }
   a#ad:link {
     text-decoration: none;
@@ -34,56 +53,72 @@
   <div id="radio">
     <div id="cover">
     </div>
-    <select id="stations"></select>
-    <audio id="player"></audio>
     <div id="controls">
-      <a id="play">►</a><a id="stop">◼</a>
+      <a id="play">►</a><br />
+      <a id="stop">◼</a>
     </div>
-    <a href="http://rockradio.com/" id="ad">rockradio.com</a>
+    <div id="info">
+      <span id="artist"></span><br />
+      <span id="title"></span><br />
+      <select id="stations"></select>
+      <input type="range" min="0" max="1" step="0.01" id="volrange" />
+    </div>
+    <audio id="player"></audio>
   </div>
   <script src="//cdnjs.cloudflare.com/ajax/libs/zepto/1.0rc1/zepto.min.js"></script>
   <script type="text/javascript">
-    var stations = {};
-    var audioele = document.getElementById('player');
-    $.getJSON('/stations.json', function(data) {
-        var $ulStats = $('#stations');
-        data.forEach(function(element) {
-            $ulStats.append('<option value="' + element.id + '" >' + element.name + '</option>');
-            stations[element.id] = element;
-        })
-        $ulStats.bind('change' , start)
-    })
+    (function() {
+      "use strinct";
+      var stations = {};
+      var audioele = document.getElementById('player');
+      var currentStream = '';
+      var updateTimer;
 
-    var currentStream = '';
-    var updateTimer;
+      $.getJSON('/stations.json', function(data) {
+          var $ulStats = $('#stations');
+          data.forEach(function(element) {
+              $ulStats.append('<option value="' + element.id + '" >' + element.name + '</option>');
+              stations[element.id] = element;
+          })
+          $ulStats.bind('change' , start)
+      })
 
-    function updateMetadata() {
-        clearTimeout(updateTimer);
-        $.ajax({
-          url: '/data/' + currentStream + '.json',
-          success: function(data) {
-              if(data.StreamTitle)
-                $('head title').text(data.StreamTitle)
-          },
-          dataType: 'json',
-          timeout: 2000
-        });
-        updateTimer = setTimeout(updateMetadata, 10000);
-    }
+      $('#volrange').on('change', function(ev) {
+        document.getElementById('player').volume = this.value;
+      });
 
-    var start = function() {
-        var id = $('#stations').val();
-        var url = '/stream/' + id + '.ogg';
-        currentStream = id;
-        $('#player').attr('src', url)[0].play();
-        $('#cover').html('<img src="http://rockradio.com/' + stations[id].cover +'" />');
-        clearTimeout(updateTimer);
-        updateTimer = setTimeout(updateMetadata, 1000);
-    }
-    $('#play').click(start)
-    $('#stop').click(function() {
-        $('#player')[0].pause();
-    })
+
+      function updateMetadata() {
+          clearTimeout(updateTimer);
+          $.ajax({
+            url: '/data/' + currentStream + '.json',
+            success: function(data) {
+                if(data.StreamTitle) {
+                  $('head title').text(data.StreamTitle)
+                  $('#artist').text(data.StreamTitle.split(' - ')[0] || '')
+                  $('#title').text(data.StreamTitle.split(' - ')[1] || '')
+                }
+            },
+            dataType: 'json',
+            timeout: 2000
+          });
+          updateTimer = setTimeout(updateMetadata, 10000);
+      }
+
+      var start = function() {
+          var id = $('#stations').val();
+          var url = '/stream/' + id + '.ogg';
+          currentStream = id;
+          $('#player').attr('src', url)[0].play();
+          $('#cover').html('<img src="http://rockradio.com/' + stations[id].cover +'" />');
+          clearTimeout(updateTimer);
+          updateTimer = setTimeout(updateMetadata, 1000);
+      }
+      $('#play').click(start)
+      $('#stop').click(function() {
+          $('#player')[0].pause();
+      })
+    })();
   </script>
 </body>
 </html>
