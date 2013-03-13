@@ -54,13 +54,32 @@
         $ulStats.bind('change' , start)
     })
 
+    var currentStream = '';
+    var updateTimer;
+
+    function updateMetadata() {
+        clearTimeout(updateTimer);
+        $.ajax({
+          url: '/data/' + currentStream + '.json',
+          success: function(data) {
+              if(data.StreamTitle)
+                $('head title').text(data.StreamTitle)
+          },
+          dataType: 'json',
+          timeout: 2000
+        });
+        updateTimer = setTimeout(updateMetadata, 10000);
+    }
+
     var start = function() {
         var id = $('#stations').val();
         var url = '/stream/' + id + '.ogg';
+        currentStream = id;
         $('#player').attr('src', url)[0].play();
         $('#cover').html('<img src="http://rockradio.com/' + stations[id].cover +'" />');
+        clearTimeout(updateTimer);
+        updateTimer = setTimeout(updateMetadata, 1000);
     }
-
     $('#play').click(start)
     $('#stop').click(function() {
         $('#player')[0].pause();
