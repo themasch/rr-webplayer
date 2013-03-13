@@ -14,13 +14,10 @@ app.get('/', function(req, res) {
   fs.createReadStream('./public/index.html').pipe(res)
 })
 
-var streamTitle = {
+var streamTitle = {}
 
-}
 app.get('/data/:name.json', function(q, s) {
-  console.log('data for ', q.params.name);
   s.json(streamTitle[q.params.name] || 'no information');
-  console.log('answers here!');
 })
 
 // ogg all teh steams!

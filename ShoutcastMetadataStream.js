@@ -26,7 +26,7 @@ ShoutcastMetadataStream.prototype._transform = function(chunk, push, done)
             var split = chunk.slice(skip+1, skip+(chunk[skip]*16)+1);
             this.emit('metadata', split.toString());
         }
-        if(skip+(chunk[skip]*16)+1)] >= chunk.length) {
+        if((skip+(chunk[skip]*16)+1) >= chunk.length || skip === 0) {
             push(chunk);
             this.count = chunk.length
         } else {
