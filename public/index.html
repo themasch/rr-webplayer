@@ -10,6 +10,7 @@
     width: 350px;
     border: 1px solid black;
     background: black;
+    font-family: sans-serif;
   }
   #cover {
     float:left;
@@ -84,8 +85,8 @@
       })
 
       $('#volrange').on('change', function(ev) {
-        document.getElementById('player').volume = this.value;
-      });
+        audioele.volume = this.value;
+      })[0].value = audioele.volume;
 
 
       function updateMetadata() {
